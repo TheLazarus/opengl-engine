@@ -1,0 +1,8 @@
+#ifndef APP_H
+#define APP_H
+
+#include <GLFW/glfw3.h>
+
+int init(GLFWwindow *window);
+
+#endif
