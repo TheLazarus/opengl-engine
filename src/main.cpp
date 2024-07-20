@@ -56,7 +56,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(800, 600, "GLFW Window", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(1920, 1080, "GLFW Window", NULL, NULL);
 
     if (window == NULL)
     {
@@ -73,16 +73,27 @@ int main()
         return -1;
     }
 
-    glViewport(0, 0, 800, 600);
-
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
+        0.5f, 0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f};
+        -0.5f, -0.5f, 0.0f,
+        -0.5f, 0.5f, 0.0f};
+
+    unsigned int indices[] = {
+        // note that we start from 0!
+        0, 1, 3, // first triangle
+        1, 2, 3  // second triangle
+    };
 
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     unsigned int vertexBuffer;
     glGenBuffers(1, &vertexBuffer);
@@ -112,11 +123,13 @@ int main()
 
     unsigned int shader = createShader(vertexShader, fragmentShader);
     glUseProgram(shader);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    while (!glfwWindowShouldClose(window))
+        while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        // glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
