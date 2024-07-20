@@ -1,5 +1,5 @@
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <iostream>
 
 static unsigned int compileShader(unsigned int type, const std::string &source)
