@@ -39,14 +39,15 @@ int main()
     glGenBuffers(1, &vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
     const char *vertex_shader =
         "#version 330 core\n"
         "layout (location = 0) in vec3 aPos;\n"
+
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+        "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
         "}";
 
     const char *fragment_shader =
@@ -55,7 +56,7 @@ int main()
         "\n"
         "void main()\n"
         "{\n"
-        "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
+        "FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);"
         "}";
 
     unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
@@ -76,7 +77,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_LINES, 0, 3);
         glfwSwapBuffers(window);
 
         glfwPollEvents();
