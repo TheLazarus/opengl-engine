@@ -1,10 +1,12 @@
 #include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <app/app>
-#include <iostream>
+#include <fstream>
+#include <sstream>
 
 int main()
 {
+    const std::string VERTEX_SHADER_PATH = "./shaders/vertexShader.shader";
+    const std::string FRAGMENT_SHADER_PATH = "./shaders/fragmentShader.shader";
 
     GLFWwindow *window = nullptr;
     if (init(&window) == -1)
@@ -41,29 +43,20 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-    const char *vertex_shader =
-        "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
+    std::string vertexShader{};
+    std::string fragmentShader{};
 
-        "void main()\n"
-        "{\n"
-        "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}";
+    readShader(vertexShader, VERTEX_SHADER_PATH);
+    readShader(fragmentShader, FRAGMENT_SHADER_PATH);
 
-    const char *fragment_shader =
-        "#version 330 core\n"
-        "out vec4 FragColor;"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);"
-        "}";
+    const char *vertShader = vertexShader.c_str();
+    const char *fragShader = fragmentShader.c_str();
 
     unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertex_shader, NULL);
+    glShaderSource(vs, 1, &vertShader, NULL);
     glCompileShader(vs);
     unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragment_shader, NULL);
+    glShaderSource(fs, 1, &fragShader, NULL);
     glCompileShader(fs);
 
     unsigned int shaderProgram = glCreateProgram();
@@ -86,6 +79,18 @@ int main()
     glfwTerminate();
 
     return 0;
+}
+
+void readShader(std::string &shader, std::string shaderPath)
+{
+    std::ifstream vertexShaderSource(shaderPath);
+
+    if (vertexShaderSource)
+    {
+        std::ostringstream ss;
+        ss << vertexShaderSource.rdbuf(); // reading data
+        shader = ss.str();
+    }
 }
 
 int init(GLFWwindow **window)
