@@ -32,16 +32,30 @@ int main()
         0.0f, 0.5f, 0.0f,
         0.5f, -0.5f, 0.0f};
 
+    float colors[] = {
+        1.0f, 1.0f, 1.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f};
+
     unsigned int vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
-    unsigned int vertexBuffer;
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    unsigned int pointsBuffer;
+    glGenBuffers(1, &pointsBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, pointsBuffer);
     glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), vertices, GL_STATIC_DRAW);
+
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+
+    unsigned int colorBuffer;
+    glGenBuffers(1, &colorBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), colors, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
     std::string vertexShader{};
     std::string fragmentShader{};
@@ -70,7 +84,7 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
-        glDrawArrays(GL_LINES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
 
         glfwPollEvents();
