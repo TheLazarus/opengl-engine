@@ -1,8 +1,6 @@
 #ifndef OG_APP_MAIN
 #define OG_APP_MAIN
 
-#include <GLFW/glfw3.h>
-#include <iostream>
 #include <string>
 
 // Constants
