@@ -1,12 +1,8 @@
 #include <glad/glad.h>
-#include <app/app>
-#include <fstream>
-#include <sstream>
+#include <app/main.h>
 
 int main()
 {
-    const std::string VERTEX_SHADER_PATH = "./shaders/vertexShader.shader";
-    const std::string FRAGMENT_SHADER_PATH = "./shaders/fragmentShader.shader";
 
     GLFWwindow *window = nullptr;
     if (init(&window) == -1)
@@ -69,9 +65,32 @@ int main()
     unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vs, 1, &vertShader, NULL);
     glCompileShader(vs);
+
+    // Error handling for shader compilation
+
+    int vParams = -1;
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &vParams);
+
+    if (vParams != 1)
+    {
+        std::cout << "Shader compilation was unsuccessful!" << std::endl;
+        return -1;
+    }
+
     unsigned int fs = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fs, 1, &fragShader, NULL);
     glCompileShader(fs);
+
+    // Error handling for shader compilation
+
+    int fParams = -1;
+    glGetShaderiv(vs, GL_COMPILE_STATUS, &fParams);
+
+    if (fParams != 1)
+    {
+        std::cout << "Shader compilation was unsuccessful!" << std::endl;
+        return -1;
+    }
 
     unsigned int shaderProgram = glCreateProgram();
     glAttachShader(shaderProgram, fs);
@@ -93,18 +112,6 @@ int main()
     glfwTerminate();
 
     return 0;
-}
-
-void readShader(std::string &shader, std::string shaderPath)
-{
-    std::ifstream vertexShaderSource(shaderPath);
-
-    if (vertexShaderSource)
-    {
-        std::ostringstream ss;
-        ss << vertexShaderSource.rdbuf(); // reading data
-        shader = ss.str();
-    }
 }
 
 int init(GLFWwindow **window)
