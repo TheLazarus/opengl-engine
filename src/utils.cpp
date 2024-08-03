@@ -41,7 +41,7 @@ void frameBufferSizeCb(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-int init(GLFWwindow **window)
+int init(GLFWwindow **window, int majorVersion, int minorVersion)
 {
     if (!glfwInit())
     {
@@ -57,6 +57,10 @@ int init(GLFWwindow **window)
         glfwTerminate();
         return -1;
     }
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     return 0;
 }

@@ -10,16 +10,14 @@ int main()
 {
 
     GLFWwindow *window = nullptr;
-    if (init(&window) == -1)
+
+    if (init(&window, 3, 3) == -1)
     {
         std::cout << "Some error occured while initializing GLFW!" << std::endl;
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwMakeContextCurrent(window);
+     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
