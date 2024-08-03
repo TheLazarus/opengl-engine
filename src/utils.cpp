@@ -1,6 +1,8 @@
 #include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 void readShader(std::string &shader, std::string shaderPath)
 {
@@ -30,4 +32,31 @@ void printProgramInfoLog(unsigned int programIndex)
     char *programLog{};
 
     glGetProgramInfoLog(programIndex, maxLength, &actualLength, programLog);
+}
+
+// FrameBuffer Callback Used to resize Viewport
+
+void frameBufferSizeCb(GLFWwindow *window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
+int init(GLFWwindow **window)
+{
+    if (!glfwInit())
+    {
+        std::cout << "Failed to initialize GLFW" << std::endl;
+        return -1;
+    }
+
+    *window = glfwCreateWindow(800, 600, "Triangles", NULL, NULL);
+
+    if (!(*window))
+    {
+        std::cout << "Failed to create the GLFW Window" << std::endl;
+        glfwTerminate();
+        return -1;
+    }
+
+    return 0;
 }

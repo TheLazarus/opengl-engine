@@ -3,7 +3,7 @@ LIB_DIR = ../lib
 INCLUDE_DIR = ../include
 LIBS = -lglfw3 -lgdi32
 
-APP_OBJECTS = main.o glad.o shaderUtils.o
+APP_OBJECTS = main.o glad.o utils.o
 
 .PHONY: all clean
 
@@ -17,8 +17,8 @@ app: ${APP_OBJECTS}
 main.o: main.cpp
 	$(CC) -g -c -I${INCLUDE_DIR} main.cpp
 
-shaderUtils.o: shaderUtils.cpp
-	$(CC) -g -c -I${INCLUDE_DIR} shaderUtils.cpp
+utils.o: utils.cpp
+	$(CC) -g -c -I${INCLUDE_DIR} utils.cpp
 
 glad.o: glad.c
 	$(CC) -g -c -I${INCLUDE_DIR} glad.c

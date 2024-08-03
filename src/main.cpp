@@ -1,9 +1,10 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <app/main.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <app/main.h>
+#include <app/utils.h>
 
 int main()
 {
@@ -15,13 +16,19 @@ int main()
         return -1;
     }
 
-       glfwMakeContextCurrent(window);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD " << "\n";
+        glfwTerminate();
         return -1;
     }
+
+    glfwSetFramebufferSizeCallback(window, frameBufferSizeCb);
 
     float vertices[] = {
         -0.5f, -0.5f, 0.0f,
@@ -52,26 +59,6 @@ int main()
     }
 
     glfwTerminate();
-
-    return 0;
-}
-
-int init(GLFWwindow **window)
-{
-    if (!glfwInit())
-    {
-        std::cout << "Failed to initialize GLFW" << std::endl;
-        return -1;
-    }
-
-    *window = glfwCreateWindow(800, 600, "Triangles", NULL, NULL);
-
-    if (!(*window))
-    {
-        std::cout << "Failed to create the GLFW Window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
 
     return 0;
 }
