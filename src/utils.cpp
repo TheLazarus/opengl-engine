@@ -51,16 +51,20 @@ int init(GLFWwindow **window, int majorVersion, int minorVersion)
 
     *window = glfwCreateWindow(800, 600, "Triangles", NULL, NULL);
 
-    if (!(*window))
+    if (*window == NULL)
     {
         std::cout << "Failed to create the GLFW Window" << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
     return 0;
+}
+
+void processInput(GLFWwindow *window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
 }

@@ -5,9 +5,7 @@ LIBS = -lglfw3 -lgdi32
 
 APP_OBJECTS = main.o glad.o utils.o
 
-.PHONY: all clean
-
-all: app
+.PHONY: clean
 
 app: ${APP_OBJECTS}
 	$(CC) -g ${APP_OBJECTS} -o app -L${LIB_DIR} ${LIBS}

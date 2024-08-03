@@ -9,7 +9,10 @@ void readShader(std::string &, const std::string);
 
 void printShaderInfoLog(unsigned int);
 void printProgramInfoLog(unsigned int);
-void frameBufferSizeCb(GLFWwindow *window, int width, int height);
+
 int init(GLFWwindow **window, int majorVersion, int minorVersion);
+
+void processInput(GLFWwindow *window);
+void frameBufferSizeCb(GLFWwindow *window, int width, int height);
 
 #endif
