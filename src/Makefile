@@ -5,6 +5,8 @@ LIBS = -lglfw3 -lgdi32
 
 APP_OBJECTS = main.o glad.o shaderUtils.o
 
+.PHONY: all clean
+
 all: app
 
 app: ${APP_OBJECTS}
@@ -20,3 +22,6 @@ shaderUtils.o: shaderUtils.cpp
 
 glad.o: glad.c
 	$(CC) -g -c -I${INCLUDE_DIR} glad.c
+
+clean:
+	del ${APP_OBJECTS} app
