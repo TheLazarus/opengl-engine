@@ -43,12 +43,28 @@ int main()
         -0.5f,
         -0.5f,
         0.0f,
+
+        0.25f,
+        0.50f,
+        0.70f,
+
         0.0f,
         0.5f,
         0.0f,
+
+        0.45f,
+        0.10f,
+        0.80f,
+
         0.5f,
         -0.5f,
-        0.0f};
+        0.0f,
+
+        0.15f,
+        0.05f,
+        0.40f,
+
+    };
 
     const float secondTriangleVertices[] = {
         0.0f,
@@ -76,10 +92,12 @@ int main()
     glGenBuffers(1, &triangleVBO);
     glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
 
-    glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), (void *)triangleVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), (void *)triangleVertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(0));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
     // Binding Second VAO here
     glBindVertexArray(secondTriangleVAO);
@@ -97,13 +115,15 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     Shader shader("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
+    Shader shaderWithColors("./shaders/vertexShaderWithColors.glsl", "./shaders/fragmentShaderWithColors.glsl");
 
     while (!glfwWindowShouldClose(window))
     {
-        shader.use();
+        shaderWithColors.use();
         glBindVertexArray(triangleVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        shader.use();
         glBindVertexArray(secondTriangleVAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
