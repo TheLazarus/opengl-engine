@@ -1,25 +1,17 @@
-CC=g++
-LIB_DIR = ../lib
-INCLUDE_DIR = ../include
+CC = g++
+OBJECTS = main.o glad.o Shader.o
 LIBS = -lglfw3 -lgdi32
 
-APP_OBJECTS = main.o glad.o utils.o
 
-.PHONY: clean
+game: ${OBJECTS}
+	${CC} -g ${OBJECTS} -o app -L../lib ${LIBS}
+	del ${OBJECTS}
 
-app: ${APP_OBJECTS}
-	$(CC) -g ${APP_OBJECTS} -o app -L${LIB_DIR} ${LIBS}
-	del ${APP_OBJECTS}
-
+Shader.o: classes/Shader.cpp
+	${CC} -g -c -I../include classes/Shader.cpp
 
 main.o: main.cpp
-	$(CC) -g -c -I${INCLUDE_DIR} main.cpp
-
-utils.o: utils.cpp
-	$(CC) -g -c -I${INCLUDE_DIR} utils.cpp
+	${CC} -g -c -I../include main.cpp
 
 glad.o: glad.c
-	$(CC) -g -c -I${INCLUDE_DIR} glad.c
-
-clean:
-	del ${APP_OBJECTS} app
+	${CC} -g -c -I../include glad.c
