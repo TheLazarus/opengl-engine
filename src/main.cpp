@@ -1,19 +1,18 @@
 #include <iostream>
-#include <glad/glad.h>
+#include "classes/Shader.hpp"
 #include <GLFW/glfw3.h>
-#include <fstream>
-#include <sstream>
 
-void frameBufferSizeCallback(GLFWwindow *window, int width, int height)
+void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
 }
 
 int main()
 {
-    if (glfwInit() == 0)
+
+    if (glfwInit() == GLFW_FALSE)
     {
-        std::cout << "Failed to initialize GLFW" << std::endl;
+        std::cout << "ERROR :: Failed to initialize GLFW" << std::endl;
         return -1;
     }
 
@@ -21,115 +20,92 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow *window = glfwCreateWindow(1920, 1080, "My First Triangle Baby!", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(1920, 1080, "OpenGL Stuff", nullptr, nullptr);
 
     if (window == NULL)
     {
-        std::cout << "Failed to create GLFW Window" << std::endl;
+        std::cout << "ERROR :: Failed to create window" << std::endl;
         return -1;
     }
 
     glfwMakeContextCurrent(window);
 
-    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
-
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "Failed to initialize GLAD " << "\n";
+        std::cout << "ERROR :: Failed to initialize GLAD " << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    const float rectangleVertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f,
+    glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
-        0.5f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f};
+    const float triangleVertices[] = {
+        -0.5f,
+        -0.5f,
+        0.0f,
+        0.0f,
+        0.5f,
+        0.0f,
+        0.5f,
+        -0.5f,
+        0.0f};
 
-    // For rendering using Vertex Streams
-    unsigned int rectangleVAO;
-    glGenVertexArrays(1, &rectangleVAO);
-    glBindVertexArray(rectangleVAO);
+    const float secondTriangleVertices[] = {
+        0.0f,
+        0.0f,
+        0.0f,
+        0.5f,
+        0.5f,
+        0.0f,
+        0.25f,
+        -0.5f,
+        0.0f};
 
-    unsigned int rectangleVBO;
-    glGenBuffers(1, &rectangleVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, rectangleVBO);
+    // Creating VAOs for Meshes
+    unsigned int triangleVAO{};
+    glGenVertexArrays(1, &triangleVAO);
 
-    glBufferData(GL_ARRAY_BUFFER, 18 * sizeof(float), rectangleVertices, GL_STATIC_DRAW);
+    unsigned int secondTriangleVAO{};
+    glGenVertexArrays(1, &secondTriangleVAO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    // Binding the first VAO here
+    glBindVertexArray(triangleVAO);
+
+    // VBO for rendering first triangle
+    unsigned int triangleVBO{};
+    glGenBuffers(1, &triangleVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+
+    glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), (void *)triangleVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
+    glEnableVertexAttribArray(0);
+
+    // Binding Second VAO here
+    glBindVertexArray(secondTriangleVAO);
+
+    // Making another VBO for the second triangle
+    unsigned int secondTriangleVBO{};
+    glGenBuffers(1, &secondTriangleVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, secondTriangleVBO);
+
+    glBufferData(GL_ARRAY_BUFFER, 9 * sizeof(float), (void *)secondTriangleVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)(0));
+
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    // For Rendering Using EBOs and Indices
-
-    unsigned int indices[] = {0, 1, 2, 3, 4, 5};
-
-    unsigned int ebo;
-    glGenBuffers(1, &ebo);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // Getting Vertex Shader Content
-    std::ifstream vertexShaderFile;
-    vertexShaderFile.open("./shaders/vertexShader.glsl");
-
-    std::stringstream vertexShaderSStream;
-    vertexShaderSStream << vertexShaderFile.rdbuf();
-    std::string vertexShaderString = vertexShaderSStream.str();
-
-    const char *vertexShaderSource = vertexShaderString.c_str();
-
-    // Getting Fragment Shader Content
-    std::ifstream fragmentShaderFile;
-    fragmentShaderFile.open("./shaders/fragmentShader.glsl");
-
-    std::stringstream fragmentShaderSStream;
-    fragmentShaderSStream << fragmentShaderFile.rdbuf();
-    std::string fragmentShaderString = fragmentShaderSStream.str();
-
-    const char *fragmentShaderSource = fragmentShaderString.c_str();
-
-    // Sourcing and Compiling Shaders
-    unsigned int vertexShaderObj;
-    vertexShaderObj = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShaderObj, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShaderObj);
-
-    unsigned int fragmentShaderObj;
-    fragmentShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(fragmentShaderObj, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShaderObj);
-
-    // Making a Shader Program
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShaderObj);
-    glAttachShader(shaderProgram, fragmentShaderObj);
-    glLinkProgram(shaderProgram);
-
-    glDeleteShader(vertexShaderObj);
-    glDeleteShader(fragmentShaderObj);
+    Shader shader("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
 
     while (!glfwWindowShouldClose(window))
     {
-        glUseProgram(shaderProgram);
+        shader.use();
+        glBindVertexArray(triangleVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        glBindVertexArray(rectangleVAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
+        glBindVertexArray(secondTriangleVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
