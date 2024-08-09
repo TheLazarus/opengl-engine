@@ -44,53 +44,121 @@ int main()
 
     float vertexData[] =
         {
+
+            // Vertex 1
             -0.5f,
             0.0f,
             0.0f,
 
+            0.55f,
+            0.10f,
+            0.90f,
+
+            // Vertex 2
             -0.5f,
             0.5f,
             0.0f,
 
+            0.15f,
+            0.10f,
+            0.70f,
+
+            // Vertex 3
             0.0f,
             0.5f,
             0.0f,
 
+            0.25f,
+            0.25f,
+            0.29f,
+
+            // Vertex 4
             0.0f,
             0.0f,
             0.0f,
 
+            0.55f,
+            0.55f,
+            0.10f,
+
+            // Vertex 5
             0.0f,
             0.2f,
             0.0f,
+
+            0.65f,
+            0.65f,
+            0.60f,
+
+            // Vertex 6
 
             0.2f,
             0.2f,
             0.0f,
 
+            0.65f,
+            0.65f,
+            0.60f,
+
+            // Vertex 7
+
             0.2f,
             0.0f,
             0.0f,
+
+            0.15f,
+            0.15f,
+            0.10f,
+
+            // Vertex 8
 
             0.4f,
             0.0f,
             0.0f,
 
+            0.15f,
+            0.15f,
+            0.10f,
+
+            // Vertex 9
+
             0.4f,
             -0.25f,
             0.0f,
 
+            0.15f,
+            0.15f,
+            0.10f,
+
+            // Vertex 10
+
             0.0f,
             -0.25f,
             0.0f,
 
+            0.15f,
+            0.15f,
+            0.10f,
+
+            // Vertex 11
+
             0.0f,
             -0.5f,
             0.0f,
 
+            0.15f,
+            0.15f,
+            0.10f,
+
+            // Vertex 12
+
             -0.5f,
             -0.5f,
             0.0f,
+
+            0.05f,
+            0.95f,
+            0.40f,
 
         };
 
@@ -111,15 +179,16 @@ int main()
 
     VAO vao;
     vao.bind();
-    VBO vbo(vertexData, 36 * sizeof(float));
+    VBO vbo(vertexData, 72 * sizeof(float));
 
-    vao.linkAttribute(vbo, 0);
+    vao.linkAttribute(vbo, 0, 3, 6 * sizeof(float), (void *)(0));
+    vao.linkAttribute(vbo, 1, 3, 6 * sizeof(float), (void *)(3 * sizeof(float)));
     EBO ebo(indices, 24 * sizeof(unsigned int));
 
     vao.unbind();
     ebo.unbind();
 
-    Shader shader("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
+    Shader shader("./shaders/vertexShaderWithColors.glsl", "./shaders/fragmentShaderWithColors.glsl");
 
     while (!glfwWindowShouldClose(window))
     {

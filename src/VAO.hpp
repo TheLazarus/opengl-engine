@@ -12,7 +12,7 @@ public:
 public:
     VAO();
 
-    void linkAttribute(VBO &vbo, unsigned int attributeIndex);
+    void linkAttribute(VBO &vbo, unsigned int attributeIndex, unsigned int noOfComponents, unsigned int stride, const void *offset);
 
     void bind() const;
 
