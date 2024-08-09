@@ -1,26 +1,31 @@
 CC = g++
-OBJECTS = main.o glad.o Shader.o VBO.o VAO.o EBO.o
+OBJECTS = main.o glad.o Shader.o VBO.o VAO.o EBO.o stb_image.o
 LIBS = -lglfw3 -lgdi32
+LIB_FLAGS = -L../lib
+INCLUDE_FLAGS = -I../include
 
 
 game: ${OBJECTS}
-	${CC} -g ${OBJECTS} -o app -L../lib ${LIBS}
+	${CC} -g ${OBJECTS} -o app ${LIB_FLAGS} ${LIBS}
 	del ${OBJECTS}
 
 Shader.o: Shader.cpp
-	${CC} -g -c -I../include Shader.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} Shader.cpp
 
 VBO.o: VBO.cpp
-	${CC} -g -c -I../include VBO.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} VBO.cpp
 
 VAO.o: VAO.cpp
-	${CC} -g -c -I../include VAO.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} VAO.cpp
 
 EBO.o: EBO.cpp
-	${CC} -g -c -I../include EBO.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} EBO.cpp
+
+stb_image.o: stb_image.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} stb_image.cpp
 
 main.o: main.cpp
-	${CC} -g -c -I../include main.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} main.cpp
 
 glad.o: glad.c
-	${CC} -g -c -I../include glad.c
+	${CC} -g -c ${INCLUDE_FLAGS} glad.c

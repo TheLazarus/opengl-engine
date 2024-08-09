@@ -1,7 +1,12 @@
 #version 330 core
 
-in vec4 outColor;
+out vec4 FragColor;
+
+in vec4 out_color;
+in vec2 out_texCoord;
+
+uniform sampler2D ourTexture;
 
 void main() {
-    gl_FragColor = outColor;
+    FragColor = texture(ourTexture, out_texCoord) * out_color;  
 }
