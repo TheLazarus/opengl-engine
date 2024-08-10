@@ -1,5 +1,5 @@
 CC = g++
-OBJECTS = main.o glad.o Shader.o VBO.o VAO.o EBO.o stb_image.o
+OBJECTS = main.o glad.o Shader.o VBO.o VAO.o EBO.o Texture.o stb_image.o
 LIBS = -lglfw3 -lgdi32
 LIB_FLAGS = -L../lib
 INCLUDE_FLAGS = -I../include
@@ -20,6 +20,9 @@ VAO.o: VAO.cpp
 
 EBO.o: EBO.cpp
 	${CC} -g -c ${INCLUDE_FLAGS} EBO.cpp
+
+Texture.o: Texture.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} Texture.cpp
 
 stb_image.o: stb_image.cpp
 	${CC} -g -c ${INCLUDE_FLAGS} stb_image.cpp

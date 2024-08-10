@@ -3,6 +3,7 @@
 #include "VBO.hpp"
 #include "EBO.hpp"
 #include "VAO.hpp"
+#include "Texture.hpp"
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
@@ -43,38 +44,20 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
-    // Generating a texture object
-
-    unsigned int texture{};
-    glGenTextures(1, &texture);
-
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    // Texture Parameter Settings
+    // Texture Configurations
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // Loading Images via STB
+    // Generating a texture object
 
-    int width{}, height{}, channels{};
+    Texture ezioTexture, sarthakTexture;
+    // Texture Parameter Settings
 
-    unsigned char *data = stbi_load("./textures/ezio.jpg", &width, &height, &channels, 0);
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
-    else
-    {
-        std::cout << "ERROR :: Failed to Load Texture" << std::endl;
-    }
-
-    stbi_image_free(data);
+    ezioTexture.bind();
+    ezioTexture.source("./textures/ezio.jpg");
 
     float vertexData[] =
         {
@@ -82,7 +65,7 @@ int main()
             // Vertex 1
             // V1 Position
             -0.5f,
-            0.0f,
+            -0.5f,
             0.0f,
 
             // V1 Color
@@ -91,8 +74,8 @@ int main()
             0.90f,
 
             // Texture Coordinates
-            0.65f,
-            0.0f,
+            0.55f,
+            0.80f,
 
             // Vertex 2
             -0.5f,
@@ -103,11 +86,11 @@ int main()
             0.10f,
             0.70f,
 
-            0.0f,
-            1.0f,
+            0.55f,
+            0.90f,
 
             // Vertex 3
-            0.0f,
+            0.5f,
             0.5f,
             0.0f,
 
@@ -115,149 +98,137 @@ int main()
             0.25f,
             0.29f,
 
-            1.0f,
-            1.0f,
+            0.75f,
+            0.80f,
 
             // Vertex 4
-            0.0f,
-            0.0f,
+            0.5f,
+            -0.5f,
             0.0f,
 
             0.55f,
             0.55f,
             0.10f,
 
-            1.0f,
-            0.0f,
+            0.85f,
+            0.90f,
 
-            // Vertex 5
-            0.0f,
-            0.2f,
-            0.0f,
+            // // Vertex 5
+            // 0.0f,
+            // 0.2f,
+            // 0.0f,
 
-            0.65f,
-            0.65f,
-            0.60f,
+            // 0.65f,
+            // 0.65f,
+            // 0.60f,
 
-            0.65f,
-            0.35f,
+            // 0.65f,
+            // 0.35f,
 
-            // Vertex 6
+            // // Vertex 6
 
-            0.2f,
-            0.2f,
-            0.0f,
+            // 0.2f,
+            // 0.2f,
+            // 0.0f,
 
-            0.65f,
-            0.65f,
-            0.60f,
+            // 0.65f,
+            // 0.65f,
+            // 0.60f,
 
-            0.65f,
-            0.77f,
+            // 0.65f,
+            // 0.77f,
 
-            // Vertex 7
+            // // Vertex 7
 
-            0.2f,
-            0.0f,
-            0.0f,
+            // 0.2f,
+            // 0.0f,
+            // 0.0f,
 
-            0.15f,
-            0.15f,
-            0.10f,
+            // 0.15f,
+            // 0.15f,
+            // 0.10f,
 
-            0.77f,
-            0.65f,
+            // 0.77f,
+            // 0.65f,
 
-            // Vertex 8
+            // // Vertex 8
 
-            0.4f,
-            0.0f,
-            0.0f,
+            // 0.4f,
+            // 0.0f,
+            // 0.0f,
 
-            0.15f,
-            0.15f,
-            0.10f,
+            // 0.15f,
+            // 0.15f,
+            // 0.10f,
 
-            0.77f,
-            0.10f,
+            // 0.77f,
+            // 0.10f,
 
-            // Vertex 9
+            // // Vertex 9
 
-            0.4f,
-            -0.25f,
-            0.0f,
+            // 0.4f,
+            // -0.25f,
+            // 0.0f,
 
-            0.15f,
-            0.15f,
-            0.10f,
+            // 0.15f,
+            // 0.15f,
+            // 0.10f,
 
-            0.0f,
-            0.0f,
+            // 0.0f,
+            // 0.0f,
 
-            // Vertex 10
+            // // Vertex 10
 
-            0.0f,
-            -0.25f,
-            0.0f,
+            // 0.0f,
+            // -0.25f,
+            // 0.0f,
 
-            0.15f,
-            0.15f,
-            0.10f,
+            // 0.15f,
+            // 0.15f,
+            // 0.10f,
 
-            0.0f,
-            0.0f,
+            // 0.0f,
+            // 0.0f,
 
-            // Vertex 11
+            // // Vertex 11
 
-            0.0f,
-            -0.5f,
-            0.0f,
+            // 0.0f,
+            // -0.5f,
+            // 0.0f,
 
-            0.15f,
-            0.15f,
-            0.10f,
+            // 0.15f,
+            // 0.15f,
+            // 0.10f,
 
-            0.0f,
-            0.0f,
+            // 0.0f,
+            // 0.0f,
 
-            // Vertex 12
+            // // Vertex 12
 
-            -0.5f,
-            -0.5f,
-            0.0f,
+            // -0.5f,
+            // -0.5f,
+            // 0.0f,
 
-            0.05f,
-            0.95f,
-            0.40f,
+            // 0.05f,
+            // 0.95f,
+            // 0.40f,
 
-            0.0f,
-            0.0f,
+            // 0.0f,
+            // 0.0f,
 
         };
 
     unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3,
-
-        3, 4, 6,
-        4, 5, 6,
-
-        3, 7, 8,
-        3, 8, 9,
-
-        3, 10, 0,
-        0, 10, 11
-
-    };
+        0, 1, 2, 2, 3, 0};
 
     VAO vao;
     vao.bind();
-    VBO vbo(vertexData, 96 * sizeof(float));
+    VBO vbo(vertexData, 32 * sizeof(float));
 
     vao.linkAttribute(vbo, 0, 3, 8 * sizeof(float), (void *)(0));
     vao.linkAttribute(vbo, 1, 3, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     vao.linkAttribute(vbo, 2, 2, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-    EBO ebo(indices, 24 * sizeof(unsigned int));
+    EBO ebo(indices, 6 * sizeof(unsigned int));
 
     vao.unbind();
     ebo.unbind();
@@ -266,11 +237,12 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
-        glBindTexture(GL_TEXTURE_2D, texture);
+
         vao.bind();
         shader.use();
 
-        glDrawElements(GL_TRIANGLES, 24, GL_UNSIGNED_INT, 0);
+        ezioTexture.bind();
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
