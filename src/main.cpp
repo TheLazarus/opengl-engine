@@ -44,20 +44,20 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
+    // Generating a texture object
+
+    Texture ezioTexture;
+    // Texture Parameter Settings
+
+    ezioTexture.bind();
+    ezioTexture.source("./textures/ezio.jpg");
+
     // Texture Configurations
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // Generating a texture object
-
-    Texture ezioTexture, sarthakTexture;
-    // Texture Parameter Settings
-
-    ezioTexture.bind();
-    ezioTexture.source("./textures/ezio.jpg");
 
     float vertexData[] =
         {
@@ -74,8 +74,8 @@ int main()
             0.90f,
 
             // Texture Coordinates
-            0.55f,
-            0.80f,
+            0.50f,
+            0.30f,
 
             // Vertex 2
             -0.5f,
@@ -86,8 +86,8 @@ int main()
             0.10f,
             0.70f,
 
-            0.55f,
-            0.90f,
+            0.50f,
+            0.70f,
 
             // Vertex 3
             0.5f,
@@ -99,7 +99,7 @@ int main()
             0.29f,
 
             0.75f,
-            0.80f,
+            0.70f,
 
             // Vertex 4
             0.5f,
@@ -110,8 +110,8 @@ int main()
             0.55f,
             0.10f,
 
-            0.85f,
-            0.90f,
+            0.75f,
+            0.30f,
 
             // // Vertex 5
             // 0.0f,

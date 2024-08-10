@@ -17,6 +17,7 @@ void Texture::unbind() const
 
 int Texture::source(const char *texturePath) const
 {
+    stbi_set_flip_vertically_on_load(1);
     int width{}, height{}, channels{};
 
     unsigned char *data = stbi_load(texturePath, &width, &height, &channels, 0);
