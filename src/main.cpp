@@ -7,6 +7,10 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -44,7 +48,9 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
-    // Generating a texture object
+    // Experimenting with GLM
+
+       // Generating a texture object
 
     Texture ezioTexture;
     // Texture Parameter Settings
