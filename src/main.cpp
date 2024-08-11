@@ -48,15 +48,13 @@ int main()
 
     glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
 
-    // Experimenting with GLM
+    // Generating a texture object
 
-       // Generating a texture object
-
-    Texture ezioTexture;
+    Texture textureWindow;
     // Texture Parameter Settings
 
-    ezioTexture.bind();
-    ezioTexture.source("./textures/ezio.jpg");
+    textureWindow.bind();
+    textureWindow.source("./textures/window.jpg");
 
     // Texture Configurations
 
@@ -80,8 +78,8 @@ int main()
             0.90f,
 
             // Texture Coordinates
-            0.50f,
-            0.30f,
+            0.0f,
+            0.0f,
 
             // Vertex 2
             -0.5f,
@@ -92,8 +90,8 @@ int main()
             0.10f,
             0.70f,
 
-            0.50f,
-            0.70f,
+            0.0f,
+            1.0f,
 
             // Vertex 3
             0.5f,
@@ -104,8 +102,8 @@ int main()
             0.25f,
             0.29f,
 
-            0.75f,
-            0.70f,
+            1.0f,
+            1.0f,
 
             // Vertex 4
             0.5f,
@@ -116,8 +114,8 @@ int main()
             0.55f,
             0.10f,
 
-            0.75f,
-            0.30f,
+            1.0f,
+            0.0f,
 
             // // Vertex 5
             // 0.0f,
@@ -247,7 +245,7 @@ int main()
         vao.bind();
         shader.use();
 
-        ezioTexture.bind();
+        textureWindow.bind();
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);

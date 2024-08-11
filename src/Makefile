@@ -3,11 +3,11 @@ OBJECTS = main.o glad.o Shader.o VBO.o VAO.o EBO.o Texture.o stb_image.o
 LIBS = -lglfw3 -lgdi32
 LIB_FLAGS = -L../lib
 INCLUDE_FLAGS = -I../include
+APP_NAME = app
 
 
-game: ${OBJECTS}
-	${CC} -g ${OBJECTS} -o app ${LIB_FLAGS} ${LIBS}
-	del ${OBJECTS}
+app: ${OBJECTS}
+	${CC} -g ${OBJECTS} -o ${APP_NAME} ${LIB_FLAGS} ${LIBS}
 
 Shader.o: Shader.cpp
 	${CC} -g -c ${INCLUDE_FLAGS} Shader.cpp
