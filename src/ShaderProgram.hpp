@@ -9,7 +9,7 @@
 class ShaderProgram
 {
 public:
-    unsigned int m_programId;
+    unsigned int id;
 
 public:
     ShaderProgram(const char *vertexShaderPath, const char *fragmentShaderPath);
