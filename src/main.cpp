@@ -21,7 +21,7 @@ int main()
 
     if (glfwInit() == GLFW_FALSE)
     {
-        std::cout << "ERROR :: Failed to initialize GLFW" << std::endl;
+        std::cerr << "ERROR :: Failed to initialize GLFW" << std::endl;
         return -1;
     }
 
@@ -33,7 +33,7 @@ int main()
 
     if (window == NULL)
     {
-        std::cout << "ERROR :: Failed to create window" << std::endl;
+        std::cerr << "ERROR :: Failed to create window" << std::endl;
         return -1;
     }
 
@@ -41,7 +41,7 @@ int main()
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
-        std::cout << "ERROR :: Failed to initialize GLAD " << std::endl;
+        std::cerr << "ERROR :: Failed to initialize GLAD " << std::endl;
         glfwTerminate();
         return -1;
     }
@@ -60,8 +60,8 @@ int main()
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     float vertexData[] =
         {

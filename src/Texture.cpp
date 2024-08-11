@@ -24,7 +24,7 @@ int Texture::source(const char *texturePath) const
 
     if (data == NULL)
     {
-        std::cout << "ERROR :: Failed to Load Texture File!" << std::endl;
+        std::cerr << "ERROR :: Failed to Load Texture File!" << std::endl;
         return -1;
     }
 
