@@ -11,6 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <cmath>
+
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -77,59 +79,27 @@ int main()
     float vertexData[] =
         {
 
-            // Vertex 1
-            -0.5f,
-            -0.5f,
+            0.0f,
+            0.0f,
             0.0f,
 
-            0.55f,
+            0.5f,
             0.10f,
-            0.90f,
-
-            0.0f,
-            0.0f,
-
-            // Vertex 2
-            -0.5f,
-            0.5f,
-            0.0f,
-
-            0.15f,
-            0.10f,
-            0.70f,
-
-            0.0f,
-            1.0f,
-
-            // Vertex 3
-            0.5f,
-            0.5f,
-            0.0f,
-
             0.25f,
-            0.25f,
-            0.29f,
 
-            1.0f,
-            1.0f,
-
-            // Vertex 4
             0.5f,
-            -0.5f,
+            0.5f,
             0.0f,
 
-            0.55f,
-            0.55f,
+            0.5f,
             0.10f,
-
-            1.0f,
-            0.0f,
+            0.25f,
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1, 2, 2, 3, 0};
+        0, 1};
 
     // Create a new VAO
     VAO vao;
@@ -138,18 +108,17 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 32 * sizeof(float));
+    VBO vbo(vertexData, 12 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
 
     // Add attributes in VAO using the currently bound VBO
-    vao.linkAttribute(vbo, 0, 3, 8 * sizeof(float), (void *)(0));
-    vao.linkAttribute(vbo, 1, 3, 8 * sizeof(float), (void *)(3 * sizeof(float)));
-    vao.linkAttribute(vbo, 2, 2, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    vao.linkAttribute(vbo, 0, 3, 6 * sizeof(float), (void *)(0));
+    vao.linkAttribute(vbo, 1, 3, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 
     // Make a new EBO
-    EBO ebo(indices, 6 * sizeof(unsigned int));
+    EBO ebo(indices, 2 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -166,11 +135,17 @@ int main()
         vao.bind();
         shaderProgram.use();
 
-        // Default Active Texture Unit is 0, and here we are binding the texture object under this default active texture unit.
-        textureWindow.bind();
+        double elapsedTime = glfwGetTime();
+
+        std::cout << "Elpased Time : " << elapsedTime << std::endl;
+
+        int uniform_translationMatrix = glGetUniformLocation(shaderProgram.id, "translationMatrix");
+        glm::mat4x4 translationMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, sin(elapsedTime) / 3.0f, sin(elapsedTime) / 5.0f, 0.0f, 1.0f);
+
+        glUniformMatrix4fv(uniform_translationMatrix, 1, false, glm::value_ptr(translationMatrix));
 
         // Pick 6 elements from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_STRIP, 3, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
