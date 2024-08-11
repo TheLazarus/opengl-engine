@@ -4,7 +4,6 @@ layout (location = 0) in vec3 pos;
 layout (location = 1) in vec3 color;
 
 out vec4 out_color;
-out vec2 out_texCoord;
 
 uniform mat4 translationMatrix;
 

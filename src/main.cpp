@@ -79,27 +79,35 @@ int main()
     float vertexData[] =
         {
 
-            0.0f,
+            -0.3f,
             0.0f,
             0.0f,
 
-            0.5f,
-            0.10f,
-            0.25f,
+            1.0f,
+            0.0f,
+            0.0f,
 
-            0.5f,
+            0.0f,
             0.5f,
             0.0f,
 
-            0.5f,
-            0.10f,
-            0.25f,
+            0.0f,
+            1.0f,
+            0.0f,
+
+            0.3f,
+            0.0f,
+            0.0f,
+
+            0.0f,
+            0.0f,
+            1.0f,
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1};
+        0, 1, 2};
 
     // Create a new VAO
     VAO vao;
@@ -108,7 +116,7 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 12 * sizeof(float));
+    VBO vbo(vertexData, 18 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
@@ -118,7 +126,7 @@ int main()
     vao.linkAttribute(vbo, 1, 3, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 
     // Make a new EBO
-    EBO ebo(indices, 2 * sizeof(unsigned int));
+    EBO ebo(indices, 3 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -130,7 +138,8 @@ int main()
     // Render Loop
     while (!glfwWindowShouldClose(window))
     {
-
+        // Clear Framebuffer image
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Bind VAO and set the shader program to use
         vao.bind();
         shaderProgram.use();
@@ -140,12 +149,12 @@ int main()
         std::cout << "Elpased Time : " << elapsedTime << std::endl;
 
         int uniform_translationMatrix = glGetUniformLocation(shaderProgram.id, "translationMatrix");
-        glm::mat4x4 translationMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, sin(elapsedTime) / 3.0f, sin(elapsedTime) / 5.0f, 0.0f, 1.0f);
+        glm::mat4x4 translationMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, sin(elapsedTime) / 2.0f, sin(elapsedTime) / 2.0f, 0.0f, 1.0f);
 
         glUniformMatrix4fv(uniform_translationMatrix, 1, false, glm::value_ptr(translationMatrix));
 
         // Pick 6 elements from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_LINE_STRIP, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
