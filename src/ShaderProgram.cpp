@@ -1,6 +1,6 @@
-#include "Shader.hpp"
+#include "ShaderProgram.hpp"
 
-Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
+ShaderProgram::ShaderProgram(const char *vertexShaderPath, const char *fragmentShaderPath)
 {
     std::string vertexShaderCode{};
     std::string fragShaderCode{};
@@ -30,6 +30,7 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
     catch (std::ifstream::failure e)
     {
         std::cerr << "ERROR :: SHADER :: Unable to read shader file source" << std::endl;
+        return;
     }
 
     const char *vShaderFinal = vertexShaderCode.c_str();
@@ -49,6 +50,7 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
     {
         glGetShaderInfoLog(vShaderObj, 512, NULL, infoLog);
         std::cerr << "ERROR :: VERTEX SHADER COMPILATION FAILED :: " << infoLog << std::endl;
+        return;
     }
 
     fShaderObj = glCreateShader(GL_FRAGMENT_SHADER);
@@ -61,6 +63,7 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
     {
         glGetShaderInfoLog(fShaderObj, 512, NULL, infoLog);
         std::cerr << "ERROR :: FRAGMENT SHADER COMPILATION FAILED :: " << infoLog << std::endl;
+        return;
     }
 
     m_programId = glCreateProgram();
@@ -79,7 +82,7 @@ Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath)
     glDeleteShader(fShaderObj);
 }
 
-void Shader::use()
+void ShaderProgram::use()
 {
 
     glUseProgram(m_programId);

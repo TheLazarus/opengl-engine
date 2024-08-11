@@ -6,13 +6,13 @@
 #include <sstream>
 #include <fstream>
 
-class Shader
+class ShaderProgram
 {
 public:
     unsigned int m_programId;
 
 public:
-    Shader(const char *vertexShaderPath, const char *fragmentShaderPath);
+    ShaderProgram(const char *vertexShaderPath, const char *fragmentShaderPath);
 
     void use();
 };

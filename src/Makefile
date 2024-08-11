@@ -1,5 +1,5 @@
 CC = g++
-OBJECTS = main.o glad.o Shader.o VBO.o VAO.o EBO.o Texture.o stb_image.o
+OBJECTS = main.o glad.o ShaderProgram.o VBO.o VAO.o EBO.o Texture.o stb_image.o
 LIBS = -lglfw3 -lgdi32
 LIB_FLAGS = -L../lib
 INCLUDE_FLAGS = -I../include
@@ -9,8 +9,8 @@ APP_NAME = app
 app: ${OBJECTS}
 	${CC} -g ${OBJECTS} -o ${APP_NAME} ${LIB_FLAGS} ${LIBS}
 
-Shader.o: Shader.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} Shader.cpp
+ShaderProgram.o: ShaderProgram.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} ShaderProgram.cpp
 
 VBO.o: VBO.cpp
 	${CC} -g -c ${INCLUDE_FLAGS} VBO.cpp
