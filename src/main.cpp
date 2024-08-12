@@ -88,7 +88,7 @@ int main()
             0.0f,
 
             0.0f,
-            0.5f,
+            0.8f,
             0.0f,
 
             0.0f,
@@ -103,11 +103,35 @@ int main()
             0.0f,
             1.0f,
 
+            0.0f,
+            -0.35f,
+            0.0f,
+
+            0.0f,
+            0.5f,
+            0.0f,
+
+            -0.3f,
+            0.25f,
+            0.0f,
+
+            1.0f,
+            0.0f,
+            0.0f,
+
+            0.3f,
+            0.25f,
+            0.0f,
+
+            0.0f,
+            0.0f,
+            1.0f,
+
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1, 2};
+        0, 1, 2, 3, 4, 5};
 
     // Create a new VAO
     VAO vao;
@@ -116,7 +140,7 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 18 * sizeof(float));
+    VBO vbo(vertexData, 36 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
@@ -126,7 +150,7 @@ int main()
     vao.linkAttribute(vbo, 1, 3, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 
     // Make a new EBO
-    EBO ebo(indices, 3 * sizeof(unsigned int));
+    EBO ebo(indices, 6 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -153,8 +177,9 @@ int main()
 
         glUniformMatrix4fv(uniform_translationMatrix, 1, false, glm::value_ptr(translationMatrix));
 
-        // Pick 6 elements from the EBO, and start drawing triangle primitives out from it.
+        // Pick elements from the EBO, and start drawing triangle primitives out from it.
         glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, (void *)(3 * sizeof(float)));
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);

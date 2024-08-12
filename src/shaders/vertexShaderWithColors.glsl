@@ -8,8 +8,8 @@ out vec4 out_color;
 uniform mat4 translationMatrix;
 
 void main() {
-    gl_Position = translationMatrix * vec4(pos, 1.0f);
-    // gl_Position = vec4(pos, 1.0f);
+    // gl_Position = translationMatrix * vec4(pos, 1.0f);
+    gl_Position = vec4(pos, 1.0f);
     out_color = vec4(color, 1.0f);
 
 }
