@@ -79,59 +79,39 @@ int main()
     float vertexData[] =
         {
 
-            -0.3f,
-            0.0f,
-            0.0f,
-
-            1.0f,
-            0.0f,
-            0.0f,
-
-            0.0f,
-            0.8f,
-            0.0f,
-
-            0.0f,
-            1.0f,
-            0.0f,
-
-            0.3f,
-            0.0f,
+            -0.5f,
+            -0.5f,
             0.0f,
 
             0.0f,
             0.0f,
-            1.0f,
 
-            0.0f,
-            -0.35f,
-            0.0f,
-
-            0.0f,
+            -0.5f,
             0.5f,
             0.0f,
 
-            -0.3f,
-            0.25f,
+            0.0f,
+            1.0f,
+
+            0.5f,
+            0.5f,
             0.0f,
 
             1.0f,
-            0.0f,
-            0.0f,
-
-            0.3f,
-            0.25f,
-            0.0f,
-
-            0.0f,
-            0.0f,
             1.0f,
+
+            0.5f,
+            -0.5f,
+            0.0f,
+
+            1.0f,
+            0.0f
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1, 2, 3, 4, 5};
+        0, 1, 2, 2, 3, 0};
 
     // Create a new VAO
     VAO vao;
@@ -140,14 +120,14 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 36 * sizeof(float));
+    VBO vbo(vertexData, 20 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
 
     // Add attributes in VAO using the currently bound VBO
-    vao.linkAttribute(vbo, 0, 3, 6 * sizeof(float), (void *)(0));
-    vao.linkAttribute(vbo, 1, 3, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+    vao.linkAttribute(vbo, 0, 3, 5 * sizeof(float), (void *)(0));
+    vao.linkAttribute(vbo, 1, 2, 5 * sizeof(float), (void *)(3 * sizeof(float)));
 
     // Make a new EBO
     EBO ebo(indices, 6 * sizeof(unsigned int));
@@ -157,7 +137,7 @@ int main()
     ebo.unbind();
 
     // Add vertex and fragment shaders
-    ShaderProgram shaderProgram("./shaders/vertexShaderWithColors.glsl", "./shaders/fragmentShaderWithColors.glsl");
+    ShaderProgram shaderProgram("./shaders/vertexShader.glsl", "./shaders/fragmentShader.glsl");
 
     // Render Loop
     while (!glfwWindowShouldClose(window))
@@ -168,18 +148,13 @@ int main()
         vao.bind();
         shaderProgram.use();
 
-        double elapsedTime = glfwGetTime();
+        textureWindow.bind();
 
-        std::cout << "Elpased Time : " << elapsedTime << std::endl;
-
-        int uniform_translationMatrix = glGetUniformLocation(shaderProgram.id, "translationMatrix");
-        glm::mat4x4 translationMatrix(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, sin(elapsedTime) / 2.0f, sin(elapsedTime) / 2.0f, 0.0f, 1.0f);
-
-        glUniformMatrix4fv(uniform_translationMatrix, 1, false, glm::value_ptr(translationMatrix));
+        int uniform_wallTexture = glGetUniformLocation(shaderProgram.id, "wallTexture");
+        glUniform1i(uniform_wallTexture, 0);
 
         // Pick elements from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, 0);
-        glDrawElements(GL_LINE_LOOP, 3, GL_UNSIGNED_INT, (void *)(3 * sizeof(float)));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
