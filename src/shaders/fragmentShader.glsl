@@ -1,13 +1,13 @@
 #version 330 core
 
 out vec4 FragColor;
+in vec2 o_texCoord;
 
-in vec2 o_textureCoordinates;
+uniform sampler2D u_tex;
 
-uniform sampler2D wallTexture;
 
 void main() {
-    FragColor = texture(wallTexture, o_textureCoordinates);
+    FragColor = texture(u_tex, o_texCoord);
 }
 
 

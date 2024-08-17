@@ -80,38 +80,34 @@ int main()
         {
 
             -0.5f,
+            0.0f,
             -0.5f,
-            0.0f,
 
             0.0f,
             0.0f,
 
-            -0.5f,
             0.5f,
             0.0f,
+            -6.5f,
 
-            0.0f,
             1.0f,
-
-            0.5f,
-            0.5f,
             0.0f,
 
-            1.0f,
-            1.0f,
-
-            0.5f,
-            -0.5f,
             0.0f,
+            0.5f,
+            -0.6f,
 
             1.0f,
-            0.0f
+            1.0f
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1, 2, 2, 3, 0};
+        0,
+        1,
+        2,
+    };
 
     // Create a new VAO
     VAO vao;
@@ -120,17 +116,17 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 20 * sizeof(float));
+    VBO vbo(vertexData, 15 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
 
     // Add attributes in VAO using the currently bound VBO
-    vao.linkAttribute(vbo, 0, 3, 5 * sizeof(float), (void *)(0));
-    vao.linkAttribute(vbo, 1, 2, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+    vao.linkAttribute(vbo, 0, 3, (5 * sizeof(float)), (void *)(0));
+    vao.linkAttribute(vbo, 1, 2, (5 * sizeof(float)), (void *)(3 * sizeof(float)));
 
     // Make a new EBO
-    EBO ebo(indices, 6 * sizeof(unsigned int));
+    EBO ebo(indices, 3 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -141,6 +137,7 @@ int main()
 
     // Render Loop
     while (!glfwWindowShouldClose(window))
+
     {
         // Clear Framebuffer image
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -150,11 +147,20 @@ int main()
 
         textureWindow.bind();
 
-        int uniform_wallTexture = glGetUniformLocation(shaderProgram.id, "wallTexture");
-        glUniform1i(uniform_wallTexture, 0);
+        // Texture Sampler2D Uniforms
+
+        // Perspective Projection Matrix
+        glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(90.0f), (float)(100 / 50), 0.5f, 10.0f);
+
+        // Setting Uniforms
+        int u_perspectiveLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
+        glUniformMatrix4fv(u_perspectiveLocation, 1, GL_FALSE, glm::value_ptr(perspectiveMatrix));
+
+        int u_textureSamplerLocation = glGetUniformLocation(shaderProgram.id, "u_tex");
+        glUniform1i(u_textureSamplerLocation, 0);
 
         // Pick elements from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
