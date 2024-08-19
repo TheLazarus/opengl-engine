@@ -10,12 +10,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <cmath>
+
+int winWidth{1920}, winHeight{1080};
 
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
+    winWidth = width;
+    winHeight = height;
 }
 
 void setOpenGLHints(unsigned int majorVersion, unsigned int minorVersion, unsigned int profile)
@@ -39,7 +42,7 @@ int main()
     setOpenGLHints(3, 3, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a new Window
-    GLFWwindow *window = glfwCreateWindow(1920, 1080, "OpenGL Stuff", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(winWidth, winHeight, "OpenGL Stuff", nullptr, nullptr);
 
     if (window == NULL)
     {
@@ -80,34 +83,34 @@ int main()
         {
 
             -0.5f,
-            0.0f,
             -0.5f,
+            -1.5f,
 
+            1.0f,
             0.0f,
             0.0f,
 
             0.5f,
-            0.0f,
-            -6.5f,
+            -0.5f,
+            -1.5f,
 
+            0.0f,
             1.0f,
             0.0f,
 
             0.0f,
             0.5f,
-            -0.6f,
+            -1.5f,
 
+            0.0f,
+            0.0f,
             1.0f,
-            1.0f
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0,
-        1,
-        2,
-    };
+        0, 1, 2};
 
     // Create a new VAO
     VAO vao;
@@ -116,14 +119,14 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 15 * sizeof(float));
+    VBO vbo(vertexData, 18 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
 
     // Add attributes in VAO using the currently bound VBO
-    vao.linkAttribute(vbo, 0, 3, (5 * sizeof(float)), (void *)(0));
-    vao.linkAttribute(vbo, 1, 2, (5 * sizeof(float)), (void *)(3 * sizeof(float)));
+    vao.linkAttribute(vbo, 0, 3, (6 * sizeof(float)), (void *)(0));
+    vao.linkAttribute(vbo, 1, 3, (6 * sizeof(float)), (void *)(3 * sizeof(float)));
 
     // Make a new EBO
     EBO ebo(indices, 3 * sizeof(unsigned int));
@@ -139,6 +142,7 @@ int main()
     while (!glfwWindowShouldClose(window))
 
     {
+
         // Clear Framebuffer image
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Bind VAO and set the shader program to use
@@ -147,19 +151,26 @@ int main()
 
         textureWindow.bind();
 
-        // Texture Sampler2D Uniforms
-
         // Perspective Projection Matrix
-        glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(90.0f), (float)(100 / 50), 0.5f, 10.0f);
+        glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(45.0f), (float)(winWidth) / (float)(winHeight), 0.1f, 10.0f);
 
-        // Setting Uniforms
+        // Rotation Matrix
+        glm::mat4 model{1.0f};
+        glm::mat4 rotationMatrix = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // Setting Perspective Uniform
         int u_perspectiveLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
         glUniformMatrix4fv(u_perspectiveLocation, 1, GL_FALSE, glm::value_ptr(perspectiveMatrix));
 
+        // Setting Rotation Uniform
+        int u_rotationLocation = glGetUniformLocation(shaderProgram.id, "u_rotation");
+        glUniformMatrix4fv(u_rotationLocation, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+
+        // Setting Active Texture Unit Uniform
         int u_textureSamplerLocation = glGetUniformLocation(shaderProgram.id, "u_tex");
         glUniform1i(u_textureSamplerLocation, 0);
 
-        // Pick elements from the EBO, and start drawing triangle primitives out from it.
+        // Pick indices from the EBO, and start drawing triangle primitives out from it.
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
