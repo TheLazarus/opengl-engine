@@ -3,7 +3,6 @@
 #include "VBO.hpp"
 #include "EBO.hpp"
 #include "VAO.hpp"
-#include "Texture.hpp"
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
@@ -12,13 +11,47 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 
+// Globals
 int winWidth{1920}, winHeight{1080};
+
+float translateX{}, translateY{}, translateZ{};
+
+const float X_TRANSLATION_SENS{0.01f}, Y_TRANSLATION_SENS{0.01f}, Z_TRANSLATION_SENS{0.01f};
 
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
     winWidth = width;
     winHeight = height;
+}
+
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+    switch (key)
+    {
+    case GLFW_KEY_D:
+        translateX += X_TRANSLATION_SENS;
+        break;
+
+    case GLFW_KEY_A:
+        translateX -= X_TRANSLATION_SENS;
+        break;
+    case GLFW_KEY_W:
+        translateY += Y_TRANSLATION_SENS;
+        break;
+    case GLFW_KEY_S:
+        translateY -= Y_TRANSLATION_SENS;
+        break;
+    case GLFW_KEY_J:
+
+        translateZ -= Z_TRANSLATION_SENS;
+        std::cout << translateZ << std::endl;
+        break;
+    case GLFW_KEY_K:
+        translateZ += Z_TRANSLATION_SENS;
+        std::cout << translateZ << std::endl;
+        break;
+    }
 }
 
 void setOpenGLHints(unsigned int majorVersion, unsigned int minorVersion, unsigned int profile)
@@ -62,55 +95,64 @@ int main()
     }
 
     // Set Window Resize Support
-    glfwSetFramebufferSizeCallback(window, frameBufferResizeCallback);
+    glfwSetFramebufferSizeCallback(window, &frameBufferResizeCallback);
 
-    // Generating a texture object
-
-    Texture textureWindow;
-    // Texture Parameter Settings
-
-    textureWindow.bind();
-    textureWindow.source("./textures/window.jpg");
-
-    // Texture Configurations
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // Listen for Keyboard Key Presses
+    glfwSetKeyCallback(window, &keyCallback);
 
     float vertexData[] =
         {
 
-            -0.5f,
-            -0.5f,
-            -1.5f,
+            0.5f,
+            0.5f,
+            0.5f,
 
-            1.0f,
-            0.0f,
-            0.0f,
+            -0.5f,
+            0.5f,
+            -0.5f,
+
+            -0.5f,
+            0.5f,
+            0.5f,
 
             0.5f,
             -0.5f,
-            -1.5f,
+            -0.5f,
 
-            0.0f,
-            1.0f,
-            0.0f,
+            -0.5f,
+            -0.5f,
+            -0.5f,
 
-            0.0f,
             0.5f,
-            -1.5f,
+            0.5f,
+            -0.5f,
 
-            0.0f,
-            0.0f,
-            1.0f,
+            0.5f,
+            -0.5f,
+            0.5f,
+
+            -0.5f,
+            -0.5f,
+            0.5f
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1, 2};
+        0, 1, 2,
+        1, 3, 4,
+        5, 6, 3,
+        7, 3, 6,
+        2, 4, 7,
+        0, 7, 6,
+        0, 5, 1,
+        1, 5, 3,
+        5, 0, 6,
+        7, 4, 3,
+        2, 1, 4,
+        0, 2, 7
+
+    };
 
     // Create a new VAO
     VAO vao;
@@ -119,17 +161,16 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 18 * sizeof(float));
+    VBO vbo(vertexData, 24 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
 
     // Add attributes in VAO using the currently bound VBO
-    vao.linkAttribute(vbo, 0, 3, (6 * sizeof(float)), (void *)(0));
-    vao.linkAttribute(vbo, 1, 3, (6 * sizeof(float)), (void *)(3 * sizeof(float)));
+    vao.linkAttribute(vbo, 0, 3, 0, (void *)(0));
 
     // Make a new EBO
-    EBO ebo(indices, 3 * sizeof(unsigned int));
+    EBO ebo(indices, 36 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -149,29 +190,24 @@ int main()
         vao.bind();
         shaderProgram.use();
 
-        textureWindow.bind();
+        // Perspective Matrix
+        float fov = 90.0f;
+        float tanHalfFOV = 1 / glm::tan(glm::radians(fov / 2));
+        glm::mat4 projectionMatrix{tanHalfFOV, 0.0f, 0.0f, 0.0f, 0.0f, tanHalfFOV, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
-        // Perspective Projection Matrix
-        glm::mat4 perspectiveMatrix = glm::perspective(glm::radians(45.0f), (float)(winWidth) / (float)(winHeight), 0.1f, 10.0f);
+        // Translation Matrix
+        glm::mat4 translationMatrix{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, translateX, translateY, translateZ, 1.0f};
 
-        // Rotation Matrix
-        glm::mat4 model{1.0f};
-        glm::mat4 rotationMatrix = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        // Setting Up Translation Matrix Uniform
+        int u_translationMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_translation");
+        glUniformMatrix4fv(u_translationMatrixLocation, 1, GL_FALSE, glm::value_ptr(translationMatrix));
 
-        // Setting Perspective Uniform
-        int u_perspectiveLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
-        glUniformMatrix4fv(u_perspectiveLocation, 1, GL_FALSE, glm::value_ptr(perspectiveMatrix));
-
-        // Setting Rotation Uniform
-        int u_rotationLocation = glGetUniformLocation(shaderProgram.id, "u_rotation");
-        glUniformMatrix4fv(u_rotationLocation, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
-
-        // Setting Active Texture Unit Uniform
-        int u_textureSamplerLocation = glGetUniformLocation(shaderProgram.id, "u_tex");
-        glUniform1i(u_textureSamplerLocation, 0);
+        // Setting Up Perspective Projection Uniform
+        int u_perspectiveMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
+        glUniformMatrix4fv(u_perspectiveMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
         // Pick indices from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
