@@ -12,7 +12,7 @@
 #include <cmath>
 
 // Globals
-int winWidth{1920}, winHeight{1080};
+int winWidth{2500}, winHeight{1080};
 
 float translateX{}, translateY{}, translateZ{};
 
@@ -193,7 +193,8 @@ int main()
         // Perspective Matrix
         float fov = 90.0f;
         float tanHalfFOV = 1 / glm::tan(glm::radians(fov / 2));
-        glm::mat4 projectionMatrix{tanHalfFOV, 0.0f, 0.0f, 0.0f, 0.0f, tanHalfFOV, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+        float aspectRatio = (float)winWidth / (float)winHeight;
+        glm::mat4 projectionMatrix{tanHalfFOV / aspectRatio, 0.0f, 0.0f, 0.0f, 0.0f, tanHalfFOV / aspectRatio, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
         // Translation Matrix
         glm::mat4 translationMatrix{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, translateX, translateY, translateZ, 1.0f};
