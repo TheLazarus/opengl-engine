@@ -3,6 +3,7 @@
 #include "VBO.hpp"
 #include "EBO.hpp"
 #include "VAO.hpp"
+#include "PerspectiveMatrix.hpp"
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
@@ -12,12 +13,17 @@
 #include <cmath>
 
 // Globals
-int winWidth{2500}, winHeight{1080};
+int winWidth{1920}, winHeight{1080};
 
-float translateX{}, translateY{}, translateZ{};
+double translateX{}, translateY{}, translateZ{};
 
-const float X_TRANSLATION_SENS{0.01f}, Y_TRANSLATION_SENS{0.01f}, Z_TRANSLATION_SENS{0.01f};
+const double X_TRANSLATION_SENS{0.01}, Y_TRANSLATION_SENS{0.01}, Z_TRANSLATION_SENS{0.01};
 
+void printOffsets(char axis, double offset)
+{
+}
+
+// Frame Buffer Resize Callback
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -25,35 +31,41 @@ void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
     winHeight = height;
 }
 
+// Key Press Callbacks
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
     switch (key)
     {
     case GLFW_KEY_D:
         translateX += X_TRANSLATION_SENS;
+        std::cout << "Current X Offset: " << translateX << std::endl;
         break;
 
     case GLFW_KEY_A:
         translateX -= X_TRANSLATION_SENS;
+        std::cout << "Current X Offset: " << translateX << std::endl;
         break;
     case GLFW_KEY_W:
         translateY += Y_TRANSLATION_SENS;
+        std::cout << "Current Y Offset: " << translateY << std::endl;
         break;
     case GLFW_KEY_S:
         translateY -= Y_TRANSLATION_SENS;
+        std::cout << "Current Y Offset: " << translateY << std::endl;
         break;
     case GLFW_KEY_J:
 
         translateZ -= Z_TRANSLATION_SENS;
-        std::cout << translateZ << std::endl;
+        std::cout << "Current Z Offset: " << translateZ << std::endl;
         break;
     case GLFW_KEY_K:
         translateZ += Z_TRANSLATION_SENS;
-        std::cout << translateZ << std::endl;
+        std::cout << "Current Z Offset: " << translateZ << std::endl;
         break;
     }
 }
 
+// OpenGL Hints
 void setOpenGLHints(unsigned int majorVersion, unsigned int minorVersion, unsigned int profile)
 {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, majorVersion);
@@ -61,6 +73,7 @@ void setOpenGLHints(unsigned int majorVersion, unsigned int minorVersion, unsign
     glfwWindowHint(GLFW_OPENGL_PROFILE, profile);
 }
 
+// Entry
 int main()
 {
 
@@ -103,54 +116,25 @@ int main()
     float vertexData[] =
         {
 
-            0.5f,
-            0.5f,
-            0.5f,
-
             -0.5f,
-            0.5f,
             -0.5f,
-
-            -0.5f,
-            0.5f,
-            0.5f,
+            0.0f,
 
             0.5f,
             -0.5f,
-            -0.5f,
+            0.0f,
 
-            -0.5f,
-            -0.5f,
-            -0.5f,
-
+            0.0f,
             0.5f,
-            0.5f,
-            -0.5f,
-
-            0.5f,
-            -0.5f,
-            0.5f,
-
-            -0.5f,
-            -0.5f,
-            0.5f
+            0.0f,
 
         };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
-        0, 1, 2,
-        1, 3, 4,
-        5, 6, 3,
-        7, 3, 6,
-        2, 4, 7,
-        0, 7, 6,
-        0, 5, 1,
-        1, 5, 3,
-        5, 0, 6,
-        7, 4, 3,
-        2, 1, 4,
-        0, 2, 7
+        0,
+        1,
+        2,
 
     };
 
@@ -161,7 +145,7 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 24 * sizeof(float));
+    VBO vbo(vertexData, 9 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
@@ -170,7 +154,7 @@ int main()
     vao.linkAttribute(vbo, 0, 3, 0, (void *)(0));
 
     // Make a new EBO
-    EBO ebo(indices, 36 * sizeof(unsigned int));
+    EBO ebo(indices, 3 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -190,12 +174,6 @@ int main()
         vao.bind();
         shaderProgram.use();
 
-        // Perspective Matrix
-        float fov = 90.0f;
-        float tanHalfFOV = 1 / glm::tan(glm::radians(fov / 2));
-        float aspectRatio = (float)winWidth / (float)winHeight;
-        glm::mat4 projectionMatrix{tanHalfFOV / aspectRatio, 0.0f, 0.0f, 0.0f, 0.0f, tanHalfFOV / aspectRatio, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-
         // Translation Matrix
         glm::mat4 translationMatrix{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, translateX, translateY, translateZ, 1.0f};
 
@@ -204,11 +182,12 @@ int main()
         glUniformMatrix4fv(u_translationMatrixLocation, 1, GL_FALSE, glm::value_ptr(translationMatrix));
 
         // Setting Up Perspective Projection Uniform
+        PerspectiveMatrix perspectiveMatrix(0.1f, 0.35f, -0.4f, 0.4f, 0.4f, -0.4f);
         int u_perspectiveMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
-        glUniformMatrix4fv(u_perspectiveMatrixLocation, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+        glUniformMatrix4fv(u_perspectiveMatrixLocation, 1, GL_FALSE, perspectiveMatrix.getAddress());
 
         // Pick indices from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
