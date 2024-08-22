@@ -4,6 +4,7 @@
 #include "EBO.hpp"
 #include "VAO.hpp"
 #include "PerspectiveMatrix.hpp"
+#include "TranslationMatrix.hpp"
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
@@ -13,22 +14,18 @@
 #include <cmath>
 
 // Globals
-int winWidth{1920}, winHeight{1080};
+int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
 
 double translateX{}, translateY{}, translateZ{};
 
 const double X_TRANSLATION_SENS{0.01}, Y_TRANSLATION_SENS{0.01}, Z_TRANSLATION_SENS{0.01};
 
-void printOffsets(char axis, double offset)
-{
-}
-
 // Frame Buffer Resize Callback
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
-    winWidth = width;
-    winHeight = height;
+    WIN_WIDTH = width;
+    WIN_HEIGHT = height;
 }
 
 // Key Press Callbacks
@@ -88,7 +85,7 @@ int main()
     setOpenGLHints(3, 3, GLFW_OPENGL_CORE_PROFILE);
 
     // Create a new Window
-    GLFWwindow *window = glfwCreateWindow(winWidth, winHeight, "OpenGL Stuff", nullptr, nullptr);
+    GLFWwindow *window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "OpenGL Stuff", nullptr, nullptr);
 
     if (window == NULL)
     {
@@ -174,17 +171,15 @@ int main()
         vao.bind();
         shaderProgram.use();
 
-        // Translation Matrix
-        glm::mat4 translationMatrix{1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, translateX, translateY, translateZ, 1.0f};
-
         // Setting Up Translation Matrix Uniform
+        TranslationMatrix translationMatrix(translateX, translateY, translateZ);
         int u_translationMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_translation");
-        glUniformMatrix4fv(u_translationMatrixLocation, 1, GL_FALSE, glm::value_ptr(translationMatrix));
+        glUniformMatrix4fv(u_translationMatrixLocation, 1, GL_FALSE, &translationMatrix);
 
         // Setting Up Perspective Projection Uniform
         PerspectiveMatrix perspectiveMatrix(0.1f, 0.35f, -0.4f, 0.4f, 0.4f, -0.4f);
         int u_perspectiveMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
-        glUniformMatrix4fv(u_perspectiveMatrixLocation, 1, GL_FALSE, perspectiveMatrix.getAddress());
+        glUniformMatrix4fv(u_perspectiveMatrixLocation, 1, GL_FALSE, &perspectiveMatrix);
 
         // Pick indices from the EBO, and start drawing triangle primitives out from it.
         glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);

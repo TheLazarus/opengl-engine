@@ -9,5 +9,5 @@ class PerspectiveMatrix
 public:
     PerspectiveMatrix(float near, float far, float left, float right, float top, float bottom);
 
-    const float *getAddress() const;
+    const float *operator&() const;
 };

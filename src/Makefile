@@ -1,5 +1,5 @@
 CC = g++
-OBJECTS = main.o glad.o ShaderProgram.o VBO.o VAO.o EBO.o Texture.o stb_image.o PerspectiveMatrix.o
+OBJECTS = main.o glad.o ShaderProgram.o VBO.o VAO.o EBO.o Texture.o stb_image.o PerspectiveMatrix.o TranslationMatrix.o
 LIBS = -lglfw3 -lgdi32
 LIB_FLAGS = -L../lib
 INCLUDE_FLAGS = -I../include
@@ -26,6 +26,9 @@ Texture.o: Texture.cpp
 
 PerspectiveMatrix.o: PerspectiveMatrix.cpp
 	${CC} -g -c ${INCLUDE_FLAGS} PerspectiveMatrix.cpp
+
+TranslationMatrix.o: TranslationMatrix.cpp
+	${CC} -g -c ${INCLUDE_FLAGS} TranslationMatrix.cpp
 
 stb_image.o: stb_image.cpp
 	${CC} -g -c ${INCLUDE_FLAGS} stb_image.cpp
