@@ -1,40 +1,36 @@
+MAKEFLAGS += --silent
+
 CC = g++
-OBJECTS = main.o glad.o ShaderProgram.o VBO.o VAO.o EBO.o Texture.o stb_image.o PerspectiveMatrix.o TranslationMatrix.o
+CFLAGS = -Wall -Wextra -pedantic
 LIBS = -lglfw3 -lgdi32
-LIB_FLAGS = -L../lib
-INCLUDE_FLAGS = -I../include
+LIB_DIRS = -L../lib
+INCLUDE_DIRS = -I../include
 APP_NAME = app
 
 
-app: ${OBJECTS}
-	${CC} -g ${OBJECTS} -o ${APP_NAME} ${LIB_FLAGS} ${LIBS}
+# Sources and Objects
+CPP_SOURCES = main.cpp ShaderProgram.cpp VBO.cpp VAO.cpp EBO.cpp Texture.cpp PerspectiveMatrix.cpp TranslationMatrix.cpp stb_image.cpp
+C_SOURCES = glad.c
 
-ShaderProgram.o: ShaderProgram.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} ShaderProgram.cpp
+CPP_OBJECTS = $(CPP_SOURCES:.cpp=.o)
+C_OBJECTS = $(C_SOURCES:.c=.o)
 
-VBO.o: VBO.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} VBO.cpp
+all: $(APP_NAME)
 
-VAO.o: VAO.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} VAO.cpp
+$(APP_NAME): $(CPP_OBJECTS) $(C_OBJECTS)
+	echo Compiling and Linking App...
+	$(CC) $(CFLAGS) $(CPP_OBJECTS) $(C_OBJECTS) -o $(APP_NAME) $(LIB_DIRS) $(LIBS)
 
-EBO.o: EBO.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} EBO.cpp
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $(INCLUDE_DIRS) $< -o $@
+	echo (C++) -- $< compiled successfully!
+	
+%.o: %.c
+	$(CC) $(CFLAGS) -c $(INCLUDE_DIRS) $< 
+	echo (C) -- $< compiled successfully!
+	
+clean: 
+	del $(APP_NAME) $(CPP_OBJECTS) $(C_OBJECTS)
+	echo Cleanup Successful
 
-Texture.o: Texture.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} Texture.cpp
-
-PerspectiveMatrix.o: PerspectiveMatrix.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} PerspectiveMatrix.cpp
-
-TranslationMatrix.o: TranslationMatrix.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} TranslationMatrix.cpp
-
-stb_image.o: stb_image.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} stb_image.cpp
-
-main.o: main.cpp
-	${CC} -g -c ${INCLUDE_FLAGS} main.cpp
-
-glad.o: glad.c
-	${CC} -g -c ${INCLUDE_FLAGS} glad.c
+.PHONY: all clean

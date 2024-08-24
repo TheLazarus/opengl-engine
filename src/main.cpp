@@ -13,6 +13,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 
+#define UNUSED(exp) (void)exp;
+
 // Globals
 unsigned int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
 
@@ -22,7 +24,8 @@ const double X_TRANSLATION_SENS{0.01}, Y_TRANSLATION_SENS{0.01}, Z_TRANSLATION_S
 
 // Frame Buffer Resize Callback
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
-{
+{   
+    UNUSED(window);
     glViewport(0, 0, width, height);
     WIN_WIDTH = width;
     WIN_HEIGHT = height;
@@ -31,6 +34,10 @@ void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
 // Key Press Callbacks
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
+    UNUSED(window);
+    UNUSED(scancode);
+    UNUSED(action);
+    UNUSED(mods);
     switch (key)
     {
     case GLFW_KEY_D:
