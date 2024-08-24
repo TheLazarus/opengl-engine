@@ -14,7 +14,7 @@
 #include <cmath>
 
 // Globals
-int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
+unsigned int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
 
 double translateX{}, translateY{}, translateZ{};
 
@@ -110,22 +110,20 @@ int main()
     // Listen for Keyboard Key Presses
     glfwSetKeyCallback(window, &keyCallback);
 
-    float vertexData[] =
-        {
+    float vertices[] = {
+        0.0f,
+        0.5f,
+        0.0f,
 
-            -0.5f,
-            -0.5f,
-            0.0f,
+        -0.5f,
+        -0.5f,
+        0.0f,
 
-            0.5f,
-            -0.5f,
-            0.0f,
+        0.5f,
+        -0.5f,
+        0.0f,
 
-            0.0f,
-            0.5f,
-            0.0f,
-
-        };
+    };
 
     // Index Array for using with EBOs
     unsigned int indices[] = {
@@ -142,7 +140,7 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertexData, 9 * sizeof(float));
+    VBO vbo(vertices, 9 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
@@ -150,7 +148,8 @@ int main()
     // Add attributes in VAO using the currently bound VBO
     vao.linkAttribute(vbo, 0, 3, 0, (void *)(0));
 
-    // Make a new EBO
+    // Create and Bind the EBO
+
     EBO ebo(indices, 3 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
@@ -171,18 +170,27 @@ int main()
         vao.bind();
         shaderProgram.use();
 
-        // Setting Up Translation Matrix Uniform
-        TranslationMatrix translationMatrix(translateX, translateY, translateZ);
-        int u_translationMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_translation");
-        glUniformMatrix4fv(u_translationMatrixLocation, 1, GL_FALSE, &translationMatrix);
+        // Setting Up the Model Matrix
+        glm::mat4 model(1.0f);
+        model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        int u_modelMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_model");
+        glUniformMatrix4fv(u_modelMatUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        // Setting Up Perspective Projection Uniform
-        PerspectiveMatrix perspectiveMatrix(0.1f, 0.35f, -0.4f, 0.4f, 0.4f, -0.4f);
-        int u_perspectiveMatrixLocation = glGetUniformLocation(shaderProgram.id, "u_perspective");
-        glUniformMatrix4fv(u_perspectiveMatrixLocation, 1, GL_FALSE, &perspectiveMatrix);
+        // Setting up the view matrix
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::translate(view, glm::vec3(translateX, translateY, translateZ));
+
+        int u_viewMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_view");
+        glUniformMatrix4fv(u_viewMatUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        // Setting up the projection matrix
+        glm::mat4 projection;
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        int u_projectionMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_projection");
+        glUniformMatrix4fv(u_projectionMatUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Pick indices from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
