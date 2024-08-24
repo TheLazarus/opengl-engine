@@ -23,11 +23,11 @@ $(APP_NAME): $(CPP_OBJECTS) $(C_OBJECTS)
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $(INCLUDE_DIRS) $< -o $@
-	echo (C++) -- $< compiled successfully!
+	echo (C++ source) -- $< compiled successfully!
 	
 %.o: %.c
-	$(CC) $(CFLAGS) -c $(INCLUDE_DIRS) $< 
-	echo (C) -- $< compiled successfully!
+	$(CC) $(CFLAGS) -c $(INCLUDE_DIRS) $< -o $@
+	echo (C source) -- $< compiled successfully!
 	
 clean: 
 	del $(APP_NAME) $(CPP_OBJECTS) $(C_OBJECTS)
