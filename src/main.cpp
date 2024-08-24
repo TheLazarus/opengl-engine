@@ -20,11 +20,11 @@ unsigned int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
 
 double translateX{}, translateY{}, translateZ{};
 
-const double X_TRANSLATION_SENS{0.01}, Y_TRANSLATION_SENS{0.01}, Z_TRANSLATION_SENS{0.01};
+const double X_TRANSLATION_SENS{0.15}, Y_TRANSLATION_SENS{0.15}, Z_TRANSLATION_SENS{0.15};
 
 // Frame Buffer Resize Callback
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
-{   
+{
     UNUSED(window);
     glViewport(0, 0, width, height);
     WIN_WIDTH = width;
@@ -179,13 +179,15 @@ int main()
 
         // Setting Up the Model Matrix
         glm::mat4 model(1.0f);
-        model = glm::rotate(model, glm::radians(45.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(2.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         int u_modelMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_model");
         glUniformMatrix4fv(u_modelMatUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
 
         // Setting up the view matrix
-        glm::mat4 view = glm::mat4(1.0f);
-        view = glm::translate(view, glm::vec3(translateX, translateY, translateZ));
+        glm::mat4 view;
+        view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f),
+                           glm::vec3(translateX, translateY, translateZ),
+                           glm::vec3(0.0f, 1.0f, 0.0f));
 
         int u_viewMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_view");
         glUniformMatrix4fv(u_viewMatUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -197,7 +199,7 @@ int main()
         glUniformMatrix4fv(u_projectionMatUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         // Pick indices from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_POINTS, 1, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
