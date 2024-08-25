@@ -18,8 +18,9 @@ C_OBJECTS = $(C_SOURCES:.c=.o)
 all: $(APP_NAME)
 
 $(APP_NAME): $(CPP_OBJECTS) $(C_OBJECTS)
-	echo Compiling and Linking App...
+	echo Started Building App...
 	$(CC) $(CFLAGS) $(CPP_OBJECTS) $(C_OBJECTS) -o $(APP_NAME) $(LIB_DIRS) $(LIBS)
+	echo Build Finished!
 
 %.o: %.cpp
 	$(CC) $(CFLAGS) -c $(INCLUDE_DIRS) $< -o $@
