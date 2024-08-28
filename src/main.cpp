@@ -18,9 +18,9 @@
 // Globals
 unsigned int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
 
-double translateX{}, translateY{}, translateZ{};
+float translateX{}, translateY{}, translateZ{};
 
-const double X_TRANSLATION_SENS{0.15}, Y_TRANSLATION_SENS{0.15}, Z_TRANSLATION_SENS{0.15};
+const float X_ROTATION_SENS{0.5f}, Y_ROTATION_SENS{0.5f}, Z_ROTATION_SENS{0.5f};
 
 // Frame Buffer Resize Callback
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
@@ -41,29 +41,29 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     switch (key)
     {
     case GLFW_KEY_D:
-        translateX += X_TRANSLATION_SENS;
+        translateX += X_ROTATION_SENS;
         std::cout << "Current X Offset: " << translateX << std::endl;
         break;
 
     case GLFW_KEY_A:
-        translateX -= X_TRANSLATION_SENS;
+        translateX -= X_ROTATION_SENS;
         std::cout << "Current X Offset: " << translateX << std::endl;
         break;
     case GLFW_KEY_W:
-        translateY += Y_TRANSLATION_SENS;
+        translateY += Y_ROTATION_SENS;
         std::cout << "Current Y Offset: " << translateY << std::endl;
         break;
     case GLFW_KEY_S:
-        translateY -= Y_TRANSLATION_SENS;
+        translateY -= Y_ROTATION_SENS;
         std::cout << "Current Y Offset: " << translateY << std::endl;
         break;
     case GLFW_KEY_J:
 
-        translateZ -= Z_TRANSLATION_SENS;
+        translateZ -= Z_ROTATION_SENS;
         std::cout << "Current Z Offset: " << translateZ << std::endl;
         break;
     case GLFW_KEY_K:
-        translateZ += Z_TRANSLATION_SENS;
+        translateZ += Z_ROTATION_SENS;
         std::cout << "Current Z Offset: " << translateZ << std::endl;
         break;
     }
@@ -111,6 +111,9 @@ int main()
         return -1;
     }
 
+    // Enable Depth Testing, this prevents writes to framebuffer when the z values are greater than the existing values in the depth buffer
+    glEnable(GL_DEPTH_TEST);
+
     // Set Window Resize Support
     glfwSetFramebufferSizeCallback(window, &frameBufferResizeCallback);
 
@@ -118,17 +121,70 @@ int main()
     glfwSetKeyCallback(window, &keyCallback);
 
     float vertices[] = {
+
+        -0.2f,
+        -0.2f,
+        -0.2f,
+
+        1.0f,
         0.0f,
-        0.5f,
         0.0f,
 
-        -0.5f,
-        -0.5f,
+        -0.2f,
+        0.2f,
+        -0.2f,
+
+        0.0f,
+        1.0f,
+        0.5f,
+
+        0.2f,
+        0.2f,
+        -0.2f,
+
+        0.0f,
+        0.0f,
+        1.0f,
+
+        0.2f,
+        -0.2f,
+        -0.2f,
+
+        1.0f,
+        0.0f,
         0.0f,
 
-        0.5f,
-        -0.5f,
+        -0.2f,
+        -0.2f,
+        0.2f,
+
         0.0f,
+        1.0f,
+        0.0f,
+
+        -0.2f,
+        0.2f,
+        0.2f,
+
+        0.0f,
+        0.0f,
+        1.0f,
+
+        0.2f,
+        0.2f,
+        0.2f,
+
+        1.0f,
+        0.25f,
+        0.0f,
+
+        0.2f,
+        -0.2f,
+        0.2f,
+
+        0.0f,
+        1.0f,
+        0.5f,
 
     };
 
@@ -137,6 +193,50 @@ int main()
         0,
         1,
         2,
+
+        2,
+        3,
+        0,
+
+        4,
+        5,
+        6,
+
+        6,
+        4,
+        7,
+
+        0,
+        1,
+        5,
+
+        5,
+        4,
+        0,
+
+        3,
+        2,
+        6,
+
+        6,
+        7,
+        3,
+
+        1,
+        2,
+        5,
+
+        5,
+        6,
+        2,
+
+        0,
+        4,
+        3,
+
+        3,
+        7,
+        4
 
     };
 
@@ -147,17 +247,18 @@ int main()
     vao.bind();
 
     // Create a new VBO
-    VBO vbo(vertices, 9 * sizeof(float));
+    VBO vbo(vertices, 48 * sizeof(float));
 
     // Bind the VBO
     vbo.bind();
 
     // Add attributes in VAO using the currently bound VBO
-    vao.linkAttribute(vbo, 0, 3, 0, (void *)(0));
+    vao.linkAttribute(vbo, 0, 3, 6 * sizeof(float), (void *)(0));
+    vao.linkAttribute(vbo, 1, 3, 6 * sizeof(float), (void *)(3 * sizeof(float)));
 
     // Create and Bind the EBO
 
-    EBO ebo(indices, 3 * sizeof(unsigned int));
+    EBO ebo(indices, 36 * sizeof(unsigned int));
 
     // Unbind VAO and EBO
     vao.unbind();
@@ -170,36 +271,41 @@ int main()
     while (!glfwWindowShouldClose(window))
 
     {
-
         // Clear Framebuffer image
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Bind VAO and set the shader program to use
         vao.bind();
         shaderProgram.use();
 
-        // Setting Up the Model Matrix
-        glm::mat4 model(1.0f);
-        model = glm::rotate(model, glm::radians(2.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        int u_modelMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_model");
-        glUniformMatrix4fv(u_modelMatUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
+        for (size_t i = 0; i < 3; i++)
+        {
+            // Setting Up the Model Matrix
+            glm::mat4 model(1.0f);
+            model = glm::rotate(model, glm::radians(translateY), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(translateX), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(translateZ), glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -(float)(i)));
+            int u_modelMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_model");
+            glUniformMatrix4fv(u_modelMatUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-        // Setting up the view matrix
-        glm::mat4 view;
-        view = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f),
-                           glm::vec3(translateX, translateY, translateZ),
-                           glm::vec3(0.0f, 1.0f, 0.0f));
+            // Setting up the view matrix
+            glm::mat4 view;
+            view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f),
+                               glm::vec3(0.0f, 0.0f, 0.0f),
+                               glm::vec3(0.0f, 1.0f, 0.0f));
 
-        int u_viewMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_view");
-        glUniformMatrix4fv(u_viewMatUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
+            int u_viewMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_view");
+            glUniformMatrix4fv(u_viewMatUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
 
-        // Setting up the projection matrix
-        glm::mat4 projection;
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-        int u_projectionMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_projection");
-        glUniformMatrix4fv(u_projectionMatUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
+            // Setting up the projection matrix
+            glm::mat4 projection;
+            projection = glm::perspective(glm::radians(45.0f), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f);
+            int u_projectionMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_projection");
+            glUniformMatrix4fv(u_projectionMatUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-        // Pick indices from the EBO, and start drawing triangle primitives out from it.
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+            // Pick indices from the EBO, and start drawing triangle primitives out from it.
+            glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        }
 
         // Swap the front and back buffers
         glfwSwapBuffers(window);
