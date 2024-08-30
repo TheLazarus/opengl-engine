@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include "ShaderProgram.hpp"
 #include "VBO.hpp"
 #include "EBO.hpp"
@@ -17,10 +18,12 @@
 
 // Globals
 unsigned int WIN_WIDTH{1920}, WIN_HEIGHT{1080};
+float deltaTime = 0.0f;
+float lastFrameTime = 0.0f;
 
-float translateX{}, translateY{}, translateZ{};
-
-const float X_ROTATION_SENS{0.5f}, Y_ROTATION_SENS{0.5f}, Z_ROTATION_SENS{0.5f};
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 // Frame Buffer Resize Callback
 void frameBufferResizeCallback(GLFWwindow *window, int width, int height)
@@ -38,33 +41,21 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
     UNUSED(scancode);
     UNUSED(action);
     UNUSED(mods);
+    float cameraSpeed{5.0f * deltaTime};
     switch (key)
     {
-    case GLFW_KEY_D:
-        translateX += X_ROTATION_SENS;
-        std::cout << "Current X Offset: " << translateX << std::endl;
-        break;
 
-    case GLFW_KEY_A:
-        translateX -= X_ROTATION_SENS;
-        std::cout << "Current X Offset: " << translateX << std::endl;
-        break;
     case GLFW_KEY_W:
-        translateY += Y_ROTATION_SENS;
-        std::cout << "Current Y Offset: " << translateY << std::endl;
+        cameraPos += cameraSpeed * cameraFront;
+        break;
+    case GLFW_KEY_A:
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         break;
     case GLFW_KEY_S:
-        translateY -= Y_ROTATION_SENS;
-        std::cout << "Current Y Offset: " << translateY << std::endl;
+        cameraPos -= cameraSpeed * cameraFront;
         break;
-    case GLFW_KEY_J:
-
-        translateZ -= Z_ROTATION_SENS;
-        std::cout << "Current Z Offset: " << translateZ << std::endl;
-        break;
-    case GLFW_KEY_K:
-        translateZ += Z_ROTATION_SENS;
-        std::cout << "Current Z Offset: " << translateZ << std::endl;
+    case GLFW_KEY_D:
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         break;
     }
 }
@@ -271,35 +262,40 @@ int main()
     while (!glfwWindowShouldClose(window))
 
     {
+        // Calculate Delta Time
+        float currentFrameTime = glfwGetTime();
+        deltaTime = currentFrameTime - lastFrameTime;
+        lastFrameTime = currentFrameTime;
+
         // Clear Framebuffer image
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // Bind VAO and set the shader program to use
         vao.bind();
         shaderProgram.use();
 
+        // Setting up 3 Cubes
         for (size_t i = 0; i < 3; i++)
         {
             // Setting Up the Model Matrix
             glm::mat4 model(1.0f);
-            model = glm::rotate(model, glm::radians(translateY), glm::vec3(1.0f, 0.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(translateX), glm::vec3(0.0f, 1.0f, 0.0f));
-            model = glm::rotate(model, glm::radians(translateZ), glm::vec3(0.0f, 0.0f, 1.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+            model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
             model = glm::translate(model, glm::vec3(0.0f, 0.0f, -(float)(i)));
             int u_modelMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_model");
             glUniformMatrix4fv(u_modelMatUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
 
             // Setting up the view matrix
             glm::mat4 view;
-            view = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.0f),
-                               glm::vec3(0.0f, 0.0f, 0.0f),
-                               glm::vec3(0.0f, 1.0f, 0.0f));
+            view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
             int u_viewMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_view");
             glUniformMatrix4fv(u_viewMatUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
 
             // Setting up the projection matrix
             glm::mat4 projection;
-            projection = glm::perspective(glm::radians(45.0f), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 100.0f);
+
+            projection = glm::perspective(glm::radians(75.0f), (float)WIN_WIDTH / (float)WIN_HEIGHT, 0.1f, 20.0f);
             int u_projectionMatUniformLoc = glGetUniformLocation(shaderProgram.id, "u_projection");
             glUniformMatrix4fv(u_projectionMatUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
